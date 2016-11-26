@@ -1,4 +1,4 @@
-docker.image('atomfrede/gitlab-ci-jhipster-stack').inside {
+docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('user:root') {
     stage('checkout') {
         checkout scm
     }
