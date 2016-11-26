@@ -19,12 +19,13 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('-u root') {
     }
 
     stage('clean') {
-        sh "./mvnw clean"
+        writeFile file: 'settings.xml', text: "<settings><localRepository>${pwd()}/.m2repo</localRepository></settings>"
+        sh "./mvnw clean -s settings.xml"
     }
 
     stage('backend tests') {
         try {
-            sh "./mvnw test"
+            sh "./mvnw test -s settings.xml"
         } catch(err) {
             throw err
         } finally {
@@ -44,7 +45,7 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('-u root') {
     }
 
     stage('packaging') {
-        sh "./mvnw package -Pprod -DskipTests"
+        sh "./mvnw package -Pprod -DskipTests -s settings.xml"
         step([$class: 'ArtifactArchiver', artifacts: '**/target/*.war', fingerprint: true])
     }
 }
