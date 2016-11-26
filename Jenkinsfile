@@ -9,8 +9,6 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('-u root') {
 
     stage('check tools') {
         sh "node -v"
-        sh "pwd"
-        sh "whoami"
         sh "npm -v"
         sh "bower -v"
         sh "gulp -v"
@@ -36,6 +34,7 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('-u root') {
 
     stage('frontend tests') {
         try {
+            sh "echo '{ "allow_root": true }' > /root/.bowerrc"
             sh "gulp test"
         } catch(err) {
             throw err
