@@ -45,5 +45,6 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside('-u root') {
 
     stage('packaging') {
         sh "./mvnw package -Pprod -DskipTests"
+        step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
     }
 }
