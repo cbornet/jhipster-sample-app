@@ -9,6 +9,8 @@ docker.image('atomfrede/gitlab-ci-jhipster-stack').inside {
 
     stage('check tools') {
         sh "node -v"
+        sh "pwd"
+        sh "whoami"
         sh "npm -v"
         sh "bower -v"
         sh "gulp -v"
