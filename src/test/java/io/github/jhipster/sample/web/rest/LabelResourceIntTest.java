@@ -4,6 +4,7 @@ import io.github.jhipster.sample.JhipsterSampleApplicationApp;
 
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
+import io.github.jhipster.sample.service.LabelService;
 import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -45,6 +46,10 @@ public class LabelResourceIntTest {
     @Autowired
     private LabelRepository labelRepository;
 
+    
+
+    @Autowired
+    private LabelService labelService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -65,7 +70,7 @@ public class LabelResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final LabelResource labelResource = new LabelResource(labelRepository);
+        final LabelResource labelResource = new LabelResource(labelService);
         this.restLabelMockMvc = MockMvcBuilders.standaloneSetup(labelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -185,7 +190,7 @@ public class LabelResourceIntTest {
     @Transactional
     public void updateLabel() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        labelService.save(label);
 
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
@@ -229,7 +234,7 @@ public class LabelResourceIntTest {
     @Transactional
     public void deleteLabel() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        labelService.save(label);
 
         int databaseSizeBeforeDelete = labelRepository.findAll().size();
 

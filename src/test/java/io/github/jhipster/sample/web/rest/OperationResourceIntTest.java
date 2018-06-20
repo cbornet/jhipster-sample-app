@@ -4,6 +4,7 @@ import io.github.jhipster.sample.JhipsterSampleApplicationApp;
 
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
+import io.github.jhipster.sample.service.OperationService;
 import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -60,6 +61,12 @@ public class OperationResourceIntTest {
     private OperationRepository operationRepository;
     @Mock
     private OperationRepository operationRepositoryMock;
+    
+    @Mock
+    private OperationService operationServiceMock;
+
+    @Autowired
+    private OperationService operationService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -80,7 +87,7 @@ public class OperationResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final OperationResource operationResource = new OperationResource(operationRepository);
+        final OperationResource operationResource = new OperationResource(operationService);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -199,8 +206,8 @@ public class OperationResourceIntTest {
     }
     
     public void getAllOperationsWithEagerRelationshipsIsEnabled() throws Exception {
-        OperationResource operationResource = new OperationResource(operationRepositoryMock);
-        when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+        OperationResource operationResource = new OperationResource(operationServiceMock);
+        when(operationServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         MockMvc restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
@@ -211,12 +218,12 @@ public class OperationResourceIntTest {
         restOperationMockMvc.perform(get("/api/operations?eagerload=true"))
         .andExpect(status().isOk());
 
-        verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+        verify(operationServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
     public void getAllOperationsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        OperationResource operationResource = new OperationResource(operationRepositoryMock);
-            when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+        OperationResource operationResource = new OperationResource(operationServiceMock);
+            when(operationServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
             MockMvc restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -226,7 +233,7 @@ public class OperationResourceIntTest {
         restOperationMockMvc.perform(get("/api/operations?eagerload=true"))
         .andExpect(status().isOk());
 
-            verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+            verify(operationServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
     @Test
@@ -256,7 +263,7 @@ public class OperationResourceIntTest {
     @Transactional
     public void updateOperation() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        operationService.save(operation);
 
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
 
@@ -304,7 +311,7 @@ public class OperationResourceIntTest {
     @Transactional
     public void deleteOperation() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        operationService.save(operation);
 
         int databaseSizeBeforeDelete = operationRepository.findAll().size();
 

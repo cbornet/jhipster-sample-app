@@ -2,7 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.BankAccount;
-import io.github.jhipster.sample.repository.BankAccountRepository;
+import io.github.jhipster.sample.service.BankAccountService;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -29,10 +29,10 @@ public class BankAccountResource {
 
     private static final String ENTITY_NAME = "bankAccount";
 
-    private final BankAccountRepository bankAccountRepository;
+    private final BankAccountService bankAccountService;
 
-    public BankAccountResource(BankAccountRepository bankAccountRepository) {
-        this.bankAccountRepository = bankAccountRepository;
+    public BankAccountResource(BankAccountService bankAccountService) {
+        this.bankAccountService = bankAccountService;
     }
 
     /**
@@ -49,7 +49,7 @@ public class BankAccountResource {
         if (bankAccount.getId() != null) {
             throw new BadRequestAlertException("A new bankAccount cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        BankAccount result = bankAccountRepository.save(bankAccount);
+        BankAccount result = bankAccountService.save(bankAccount);
         return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -71,7 +71,7 @@ public class BankAccountResource {
         if (bankAccount.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        BankAccount result = bankAccountRepository.save(bankAccount);
+        BankAccount result = bankAccountService.save(bankAccount);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bankAccount.getId().toString()))
             .body(result);
@@ -86,7 +86,7 @@ public class BankAccountResource {
     @Timed
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
-        return bankAccountRepository.findAll();
+        return bankAccountService.findAll();
     }
 
     /**
@@ -99,7 +99,7 @@ public class BankAccountResource {
     @Timed
     public ResponseEntity<BankAccount> getBankAccount(@PathVariable Long id) {
         log.debug("REST request to get BankAccount : {}", id);
-        Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
+        Optional<BankAccount> bankAccount = bankAccountService.findOne(id);
         return ResponseUtil.wrapOrNotFound(bankAccount);
     }
 
@@ -113,8 +113,7 @@ public class BankAccountResource {
     @Timed
     public ResponseEntity<Void> deleteBankAccount(@PathVariable Long id) {
         log.debug("REST request to delete BankAccount : {}", id);
-
-        bankAccountRepository.deleteById(id);
+        bankAccountService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

@@ -2,7 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Label;
-import io.github.jhipster.sample.repository.LabelRepository;
+import io.github.jhipster.sample.service.LabelService;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -29,10 +29,10 @@ public class LabelResource {
 
     private static final String ENTITY_NAME = "label";
 
-    private final LabelRepository labelRepository;
+    private final LabelService labelService;
 
-    public LabelResource(LabelRepository labelRepository) {
-        this.labelRepository = labelRepository;
+    public LabelResource(LabelService labelService) {
+        this.labelService = labelService;
     }
 
     /**
@@ -49,7 +49,7 @@ public class LabelResource {
         if (label.getId() != null) {
             throw new BadRequestAlertException("A new label cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Label result = labelRepository.save(label);
+        Label result = labelService.save(label);
         return ResponseEntity.created(new URI("/api/labels/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -71,7 +71,7 @@ public class LabelResource {
         if (label.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Label result = labelRepository.save(label);
+        Label result = labelService.save(label);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, label.getId().toString()))
             .body(result);
@@ -86,7 +86,7 @@ public class LabelResource {
     @Timed
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
-        return labelRepository.findAll();
+        return labelService.findAll();
     }
 
     /**
@@ -99,7 +99,7 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
-        Optional<Label> label = labelRepository.findById(id);
+        Optional<Label> label = labelService.findOne(id);
         return ResponseUtil.wrapOrNotFound(label);
     }
 
@@ -113,8 +113,7 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
-
-        labelRepository.deleteById(id);
+        labelService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

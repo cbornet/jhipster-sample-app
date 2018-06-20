@@ -2,7 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Operation;
-import io.github.jhipster.sample.repository.OperationRepository;
+import io.github.jhipster.sample.service.OperationService;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.sample.web.rest.util.PaginationUtil;
@@ -34,10 +34,10 @@ public class OperationResource {
 
     private static final String ENTITY_NAME = "operation";
 
-    private final OperationRepository operationRepository;
+    private final OperationService operationService;
 
-    public OperationResource(OperationRepository operationRepository) {
-        this.operationRepository = operationRepository;
+    public OperationResource(OperationService operationService) {
+        this.operationService = operationService;
     }
 
     /**
@@ -54,7 +54,7 @@ public class OperationResource {
         if (operation.getId() != null) {
             throw new BadRequestAlertException("A new operation cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Operation result = operationRepository.save(operation);
+        Operation result = operationService.save(operation);
         return ResponseEntity.created(new URI("/api/operations/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -76,7 +76,7 @@ public class OperationResource {
         if (operation.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Operation result = operationRepository.save(operation);
+        Operation result = operationService.save(operation);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, operation.getId().toString()))
             .body(result);
@@ -95,9 +95,9 @@ public class OperationResource {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page;
         if (eagerload) {
-            page = operationRepository.findAllWithEagerRelationships(pageable);
+            page = operationService.findAllWithEagerRelationships(pageable);
         } else {
-            page = operationRepository.findAll(pageable);
+            page = operationService.findAll(pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/operations?eagerload=%b", eagerload));
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -113,7 +113,7 @@ public class OperationResource {
     @Timed
     public ResponseEntity<Operation> getOperation(@PathVariable Long id) {
         log.debug("REST request to get Operation : {}", id);
-        Optional<Operation> operation = operationRepository.findOneWithEagerRelationships(id);
+        Optional<Operation> operation = operationService.findOne(id);
         return ResponseUtil.wrapOrNotFound(operation);
     }
 
@@ -127,8 +127,7 @@ public class OperationResource {
     @Timed
     public ResponseEntity<Void> deleteOperation(@PathVariable Long id) {
         log.debug("REST request to delete Operation : {}", id);
-
-        operationRepository.deleteById(id);
+        operationService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

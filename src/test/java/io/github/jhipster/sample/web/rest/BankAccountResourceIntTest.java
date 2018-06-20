@@ -4,6 +4,7 @@ import io.github.jhipster.sample.JhipsterSampleApplicationApp;
 
 import io.github.jhipster.sample.domain.BankAccount;
 import io.github.jhipster.sample.repository.BankAccountRepository;
+import io.github.jhipster.sample.service.BankAccountService;
 import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -49,6 +50,10 @@ public class BankAccountResourceIntTest {
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
+    
+
+    @Autowired
+    private BankAccountService bankAccountService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -69,7 +74,7 @@ public class BankAccountResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final BankAccountResource bankAccountResource = new BankAccountResource(bankAccountRepository);
+        final BankAccountResource bankAccountResource = new BankAccountResource(bankAccountService);
         this.restBankAccountMockMvc = MockMvcBuilders.standaloneSetup(bankAccountResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -211,7 +216,7 @@ public class BankAccountResourceIntTest {
     @Transactional
     public void updateBankAccount() throws Exception {
         // Initialize the database
-        bankAccountRepository.saveAndFlush(bankAccount);
+        bankAccountService.save(bankAccount);
 
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
 
@@ -257,7 +262,7 @@ public class BankAccountResourceIntTest {
     @Transactional
     public void deleteBankAccount() throws Exception {
         // Initialize the database
-        bankAccountRepository.saveAndFlush(bankAccount);
+        bankAccountService.save(bankAccount);
 
         int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
 
