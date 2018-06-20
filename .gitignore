@@ -1,7 +1,6 @@
 ######################
 # Project Specific
 ######################
-/target/www/**
 /src/test/javascript/coverage/
 
 ######################
@@ -71,7 +70,9 @@ out/
 # Maven
 ######################
 /log/
-/target/
+/target/*
+!/target/www/
+
 
 ######################
 # Gradle
